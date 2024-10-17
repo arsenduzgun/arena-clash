@@ -61,7 +61,7 @@ The arenas further enhance gameplay by introducing environmental effects that af
 ## 6. Future Work
 1. **More units**: Introduce additional unit types with unique abilities and attributes, such as ranged attackers or defensive tanks, to increase the variety of team compositions and strategies.
 2. **More arenas**: Expand the available arenas with different environmental effects, such as ice fields that slow movement or poison fields that deal gradual damage, providing fresh challenges and strategic considerations for each battle.
-3. **Graphical User Interface (GUI)**: Develop a GUI to make the game more accessible and visually engaging. This would allow for easier navigation, improved interaction, and an overall enhanced user experience compared to the command-line interface.
+3. **Graphical User Interface**: Develop a GUI to make the game more accessible and visually engaging. This would allow for easier navigation, improved interaction, and an overall enhanced user experience compared to the command-line interface.
 
 ## 7. Conclusion
 The Arena Clash project offers a fun and strategic gameplay experience where players can experiment with different team compositions and strategies. The combination of diverse unit types and dynamic arena effects creates a fresh challenge in every game. With a solid framework in place, the game has the potential for future enhancements that could further improve both its replayability and depth.
