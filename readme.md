@@ -1,10 +1,10 @@
 # Arena Clash
 
 ## 1. Introduction
-This project is a command-line-based game where two teams of four units each engage in combat. The teams select units from three available classes—Warrior, Assassin, and Healer—each with unique strengths, weaknesses, and special abilities. Players face off in one of two distinct arenas, each introducing different environmental effects that influence the flow of battle. The objective is to eliminate the opposing team by carefully managing unit abilities and adapting to the challenges posed by the arenas.
+This project is a command-line-based game where two teams of three units engage in combat. The teams select units from three available classes—Warrior, Assassin, and Healer—each with unique strengths, weaknesses, and special abilities. Players face off in one of two distinct arenas, each introducing different environmental effects that influence the flow of battle. The objective is to eliminate the opposing team by carefully managing unit abilities and adapting to the challenges posed by the arenas.
 
 ## 2. Game Structure
-The game is designed as a turn-based battle where each team, composed of four units, alternates attacks and defenses until one team is completely eliminated. Players can choose to perform regular attacks, use special abilities, or rely on the unique effects of the arena in which the battle takes place.
+The game is designed as a turn-based battle where each team, composed of three units, alternates attacks and defenses until one team is completely eliminated. Players can choose to perform regular attacks, use special abilities, or rely on the unique effects of the arena in which the battle takes place.
 
 The key elements of the game are the unit classes and the arena environments, both of which significantly impact gameplay. Each unit type has different attributes such as health points (HP), attack points, defense points, and special abilities. Arena effects add an extra layer of unpredictability, requiring players to strategize not just based on their opponents but also on the battlefield itself.
 
