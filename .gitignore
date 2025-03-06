@@ -4,7 +4,6 @@ x64/
 # Ignore Visual Studio specific folder
 .vs/
 
-# Ignore Visual Studio specific files
-*.vcxproj
+# Ignore Visual Studio user-specific and filter files
 *.vcxproj.user
 *.vcxproj.filters
