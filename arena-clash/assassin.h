@@ -74,4 +74,4 @@ private:
     }
 };
 
-#endif // ASSASSIN_H
+#endif
