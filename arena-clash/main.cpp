@@ -1,186 +1,160 @@
-#include <iostream> 
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+#include <cstdlib>
+#include <ctime>
+#include <thread>
+#include <algorithm>
+
 #include "assassin.h"
 #include "warrior.h"
 #include "healer.h"
 #include "fireMeteoriteArena.h"
 #include "valhallaArena.h"
-#include <cstdlib>
-#include <ctime>
-#include <string>
-#include <vector>
 
 using namespace std;
 
+string toLower(const string& str) {
+    string lowered = str;
+    transform(lowered.begin(), lowered.end(), lowered.begin(), ::tolower);
+    return lowered;
+}
+
+unique_ptr<Unit> createUnit(const string& type, const string& teamName, int id) {
+    string nickName;
+    cout << "\nEnter a name for your " << type << ": ";
+    getline(cin, nickName);
+
+    if (type == "Assassin") return make_unique<Assassin>(nickName, type, teamName, id);
+    if (type == "Warrior") return make_unique<Warrior>(nickName, type, teamName, id);
+    if (type == "Healer") return make_unique<Healer>(nickName, type, teamName, id);
+
+    return nullptr;
+}
+
+void chooseTeam(vector<unique_ptr<Unit>>& team, const string& teamName) {
+    cout << "\nChoose units for " << teamName << ":\n";
+    cout << "Options: Assassin | Warrior | Healer\n";
+
+    int counter = 1;
+    while (counter <= 3) {
+        cout << "Choose unit " << counter << ": ";
+        string input;
+        getline(cin, input);
+
+        string lowerInput = toLower(input);
+        if (lowerInput == "assassin" || lowerInput == "warrior" || lowerInput == "healer") {
+            unique_ptr<Unit> unit = createUnit(input, teamName, counter);
+            team.push_back(move(unit));
+            counter++;
+        }
+        else {
+            cout << "Invalid unit type. Please enter Assassin, Warrior, or Healer.\n";
+        }
+    }
+}
+
 void buildTeams(vector<unique_ptr<Unit>>& team1, vector<unique_ptr<Unit>>& team2) {
-	string teamName;
-	int counter = 1;
-	string input;
-	string nickName;
-	cout << "\nPlease enter the first team name: ";
-	getline(cin, teamName);
-	cout << "\nChoose units of " << teamName << endl;
-	cout << "\nPlease type and enter Assassin to choose a Assassin" << endl;
-	cout << "\nPlease type and enter Warrior to choose a Warrior" << endl;
-	cout << "\nPlease type and enter Healer to choose a Healer" << endl;
-	while (counter != 4) {
-		cout << "\nChoose your unit " << counter << ": ";
-		getline(cin, input);
-		if (input._Equal("Assassin")) {
-			cout << "\nPlease enter your Assassin name: ";
-			getline(cin, nickName);
-			unique_ptr<Unit> assassin(new Assassin(nickName, "Assassin", teamName, counter));
-			team1.push_back(move(assassin));
-		}
-		else if (input._Equal("Warrior")) {
-			cout << "\nPlease enter your Warrior name: ";
-			getline(cin, nickName);
-			unique_ptr<Unit> warrior(new Warrior(nickName, "Warrior", teamName, counter));
-			team1.push_back(move(warrior));
-		}
-		else if (input._Equal("Healer")) {
-			cout << "\nPlease enter your Healer name: ";
-			getline(cin, nickName);
-			unique_ptr<Unit> healer(new Healer(nickName, "Healer", teamName, counter));
-			team1.push_back(move(healer));
-		}
-		else {
-			cout << "\nYou have entered an invalid value, please enter again" << endl;
-			continue;
-		}
-		counter++;
-	}
-	counter = 1;
-	cout << "\nPlease enter the second team name: ";
-	getline(cin, teamName);
-	cout << "\nChoose units of " << teamName << "\n";
-	while (counter != 4) {
-		cout << "\nChoose your unit " << counter << ": ";
-		getline(cin, input);
-		if (input._Equal("Assassin")) {
-			cout << "\nPlease enter your Assassin name: ";
-			getline(cin, nickName);
-			unique_ptr<Unit> assassin(new Assassin(nickName, "Assassin", teamName, counter));
-			team2.push_back(move(assassin));
-		}
-		else if (input._Equal("Warrior")) {
-			cout << "\nPlease enter your Warrior name: ";
-			getline(cin, nickName);
-			unique_ptr<Unit> warrior(new Warrior(nickName, "Warrior", teamName, counter));
-			team2.push_back(move(warrior));
-		}
-		else if (input._Equal("Healer")) {
-			cout << "\nPlease enter your Healer name: ";
-			getline(cin, nickName);
-			unique_ptr<Unit> healer(new Healer(nickName, "Healer", teamName, counter));
-			team2.push_back(move(healer));
-		}
-		else {
-			cout << "\nYou have entered an invalid value, please enter again" << endl;
-			continue;
-		}
-		counter++;
-	}
+    string teamName1, teamName2;
+
+    cout << "Enter name for the first team: ";
+    getline(cin, teamName1);
+    chooseTeam(team1, teamName1);
+
+    cout << "\nEnter name for the second team: ";
+    getline(cin, teamName2);
+    chooseTeam(team2, teamName2);
 }
 
 void selectArena(unique_ptr<Arena>& arena) {
-	bool selectArena = false;
-	cout << "\nPlease select the Arena type" << endl;
-	string input;
-	cout << "\nPlease type and enter Fire Meteorite Arena to select Fire Meteorite Arena" << endl;
-	cout << "\nPlease type and enter Valhalla Arena to select Valhalla Arena" << endl;
-	while (!selectArena) {
-		cout << "\nChoose your Arena type: ";
-		getline(cin, input);
-		if (input._Equal("Fire Meteorite Arena")) {
-			unique_ptr<Arena> fireMeteoriteArena(new FireMeteoriteArena());
-			arena = move(fireMeteoriteArena);
-		}
-		else if (input._Equal("Valhalla Arena")) {
-			unique_ptr<Arena> valhallaArena(new ValhallaArena());
-			arena = move(valhallaArena);
-		}
-		else {
-			cout << "\nYou have entered an invalid value, please enter again" << endl;
-			continue;
-		}
-		selectArena = true;
-	}
+    cout << "\nSelect Arena Type:\n";
+    cout << "Options: Fire Meteorite Arena | Valhalla Arena\n";
+
+    while (true) {
+        cout << "Your choice: ";
+        string input;
+        getline(cin, input);
+        string lowerInput = toLower(input);
+
+        if (lowerInput == "fire meteorite arena") {
+            arena = make_unique<FireMeteoriteArena>();
+            break;
+        }
+        else if (lowerInput == "valhalla arena") {
+            arena = make_unique<ValhallaArena>();
+            break;
+        }
+        else {
+            cout << "Invalid arena. Try again.\n";
+        }
+    }
 }
 
 void flipCoin(vector<unique_ptr<Unit>>& team1, vector<unique_ptr<Unit>>& team2, unique_ptr<Arena>& arena) {
-	cout << "\nCoin flipping...\n" << endl;
-	this_thread::sleep_for(1s);
-	srand(time(NULL));
-	int toss_A_Coin = rand() % 2;
-	if (toss_A_Coin == 1) {
-		cout << team1[0]->getTeamName() << " will start the battle" << endl;
-		arena->battle(team1, team2);
-	}
-	else {
-		cout << team2[0]->getTeamName() << " will start the battle" << endl;
-		arena->battle(team2, team1);
-	}
+    cout << "\nFlipping coin...\n";
+    this_thread::sleep_for(1s);
+    srand(static_cast<unsigned>(time(nullptr)));
+
+    int coin = rand() % 2;
+    auto& startingTeam = (coin == 1) ? team1 : team2;
+    auto& opponentTeam = (coin == 1) ? team2 : team1;
+
+    cout << startingTeam[0]->getTeamName() << " will start the battle!\n";
+    arena->battle(startingTeam, opponentTeam);
 }
 
-void info() {
-	cout << "\t\t\t\t\t-----WELCOME TO THE ARENA CLASH!-----" << endl;
-	cout << "\nThis game is designed for battle of 2 teams in arena mode" << endl;
-	cout << "\nThere are 3 units and 2 arenas you can choose with different speciality" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	cout << "\n\t\t\t\t\t\tASSASSIN" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	cout << "\nHP: 250" << endl;
-	cout << "\nAttack Point: 30 - 40" << endl;
-	cout << "\nDefence Point: 10 - 15" << endl;
-	cout << "\nSpecial Ability: Attack to all opponents" << endl;
-	cout << "\nSpecial Ability Chance: %15" << endl;
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n\t\t\t\t\t\tWARRIOR" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	cout << "\nHP : 200" << endl;
-	cout << "\nAttack Point: 35 - 45" << endl;
-	cout << "\nDefence Point: 10 - 15" << endl;
-	cout << "\nSpecial Ability: Critical attack" << endl;
-	cout << "\nSpecial Ability Chance: %30" << endl;
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n\t\t\t\t\t\tHEALER" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	cout << "\nHP: 250" << endl;
-	cout << "\nAttack Point: 15 - 20" << endl;
-	cout << "\nDefence Point: 15 - 20" << endl;
-	cout << "\nSpecial Ability: Healing teammates by their %10 HP(cannot be applied on dead teammates)" << endl;
-	cout << "\nSpecial Ability Chance: %15" << endl;
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n\t\t\t\t\t\tFIRE METEORITE ARENA" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	cout << "\nFire Meteorite Arena: Fire meteorite attack(20 pure damage) each unit on the field after each round" << endl;
-	cout << "\nFire Meteorite Chance: %10" << endl;
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n\t\t\t\t\t\tVALHALLA ARENA" << endl;
-	this_thread::sleep_for(0.5s);
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	cout << "\nValhalla Arena: Resurrecting the dead units with %20 of their HP after each round" << endl;
-	cout << "\nResurrection Chance: %5" << endl;
-	cout << "\n------------------------------------------------------------------------------------------------------------------------" << endl;
-	this_thread::sleep_for(0.5s);
+void displayInfo() {
+    cout << R"(
+----------------------------------------------------------
+                  WELCOME TO THE ARENA CLASH!
+----------------------------------------------------------
+
+Game Overview:
+- Two teams battle in an arena
+- Choose from 3 unit types and 2 arena types
+
+Units:
+ASSASSIN
+ - HP: 250
+ - Attack: 30 - 40
+ - Defence: 10 - 15
+ - Special: Attacks all opponents (15% chance)
+
+WARRIOR
+ - HP: 200
+ - Attack: 35 - 45
+ - Defence: 10 - 15
+ - Special: Critical attack (30% chance)
+
+HEALER
+ - HP: 250
+ - Attack: 15 - 20
+ - Defence: 15 - 20
+ - Special: Heals teammates by 10% HP (15% chance)
+
+Arenas:
+FIRE METEORITE ARENA
+ - 10% chance of meteorite hitting all units for 20 damage each round
+
+VALHALLA ARENA
+ - 5% chance to resurrect one dead unit with 20% HP each round
+----------------------------------------------------------
+)";
+    this_thread::sleep_for(1s);
 }
 
 int main() {
-	//info();
-	vector<unique_ptr<Unit>> team1;
-	vector<unique_ptr<Unit>> team2;
-	buildTeams(team1, team2);
-	unique_ptr<Arena> arena;
-	selectArena(arena);
-	flipCoin(team1, team2, arena);
-	return 0;
+    displayInfo();
+
+    vector<unique_ptr<Unit>> team1;
+    vector<unique_ptr<Unit>> team2;
+    buildTeams(team1, team2);
+
+    unique_ptr<Arena> arena;
+    selectArena(arena);
+
+    flipCoin(team1, team2, arena);
+
+    return 0;
 }
