@@ -1,103 +1,88 @@
-#ifndef UNIT_H
+﻿#ifndef UNIT_H
 #define UNIT_H
 
 #include <iostream>
 #include <vector>
-#include <ctime>
+#include <memory>
+#include <random>
 
 using namespace std;
 
 class Unit {
-
 protected:
+    const string nickName;
+    const string teamName;
+    const string className;
+    const int creationOrder;
+    int maxHP;
+    int HP;
+    int maxAttackPoint;
+    int minAttackPoint;
+    int maxDefencePoint;
+    int minDefencePoint;
+    int specialAbilityChance;
+    bool isFrozen = false;
+    bool isCursed = false;
 
-	const string nickName;
-	const string teamName;
-	const string className;
-	const int creationOrder;
-	int maxHP;
-	int HP;
-	int maxAttackPoint;
-	int minAttackPoint;
-	int maxDefencePoint;
-	int minDefencePoint;
-	int specialAbilityChance;
-	bool isFrozen = false;
-	bool isCursed = false;
+    // Shared static random number generator
+    static mt19937 rng;
 
 public:
+    Unit(string nickName, string className, string teamName, int creationOrder)
+        : nickName(move(nickName)), teamName(move(teamName)),
+        className(move(className)), creationOrder(creationOrder) {}
 
-	Unit(string nickName, string className, string teamName, int creationOrder) : nickName(nickName), className(className), teamName(teamName), creationOrder(creationOrder) {}
+    virtual ~Unit() = default;
 
-	virtual void attack(vector<unique_ptr<Unit>>& attackersTeam, vector<unique_ptr<Unit>>& defendersTeam, unique_ptr<Unit>& attacker, unique_ptr<Unit>& defender) = 0;
+    virtual void attack(vector<unique_ptr<Unit>>& attackersTeam,
+        vector<unique_ptr<Unit>>& defendersTeam,
+        unique_ptr<Unit>& attacker,
+        unique_ptr<Unit>& defender) = 0;
 
-	virtual void specialSkill(vector<unique_ptr<Unit>>& attackersTeam, vector<unique_ptr<Unit>>& defendersTeam, unique_ptr<Unit>& attacker, unique_ptr<Unit>& defender) = 0;
+    virtual void specialSkill(vector<unique_ptr<Unit>>& attackersTeam,
+        vector<unique_ptr<Unit>>& defendersTeam,
+        unique_ptr<Unit>& attacker,
+        unique_ptr<Unit>& defender) = 0;
 
-	string getNickName() const {
-		return nickName;
-	}
+    string getNickName() const { return nickName; }
+    string getTeamName() const { return teamName; }
+    string getClassName() const { return className; }
+    int getCreationOrder() const { return creationOrder; }
+    int getHP() const { return HP; }
+    int getMaxHP() const { return maxHP; }
+    int getSpecialAbilityChance() const { return specialAbilityChance; }
 
-	int getHP() const {
-		return HP;
-	}
+    void setHP(int newHP) { HP = newHP; }
 
-	void setHP(int HP) {
-		this->HP = HP;
-	}
+    int getAttackPoint() const {
+        uniform_int_distribution<int> dist(minAttackPoint, maxAttackPoint);
+        return dist(rng);
+    }
 
-	int getMaxHP() const {
-		return maxHP;
-	}
+    int getDefencePoint() const {
+        uniform_int_distribution<int> dist(minDefencePoint, maxDefencePoint);
+        return dist(rng);
+    }
 
-	int getCreationOrder() const {
-		return creationOrder;
-	}
+    static bool isAlive(const unique_ptr<Unit>& unit) {
+        return unit && unit->getHP() > 0;
+    }
 
-	string getTeamName() const {
-		return teamName;
-	}
+    static bool isTeamAlive(const vector<unique_ptr<Unit>>& team) {
+        for (const auto& unit : team) {
+            if (isAlive(unit)) return true;
+        }
+        return false;
+    }
 
-	string getClassName() const {
-		return className;
-	}
-
-	int getAttackPoint() const {
-		srand(time(NULL));
-		return minAttackPoint + (rand() % (maxAttackPoint - minAttackPoint));
-	}
-
-	int getDefencePoint() const {
-		srand(time(NULL));
-		return minDefencePoint + (rand() % (maxDefencePoint - minDefencePoint));
-	}
-
-	int getSpecialAbilityChance() const {
-		return specialAbilityChance;
-	}
-
-	bool isTeamAlive(vector<unique_ptr<Unit>>& team) {
-		for (unique_ptr<Unit>& unit : team) {
-			if (unit->getHP() > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool isAlive(unique_ptr<Unit>& unit) {
-		if (unit->getHP() > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	bool isLucky(unique_ptr<Unit>& unit) {
-		srand(time(NULL));
-		int chance = 1 + (rand() % 99);
-		if (chance <= unit->getSpecialAbilityChance()) {
-			return true;
-		}
-		return false;
-	}
+    // ✅ Accepts unique_ptr directly now
+    static bool isLucky(const unique_ptr<Unit>& unit) {
+        uniform_int_distribution<int> dist(1, 100);
+        return dist(rng) <= unit->getSpecialAbilityChance();
+    }
 };
-#endif
+
+// Initialize static RNG
+mt19937 Unit::rng(random_device{}());
+
+#endif // UNIT_H
