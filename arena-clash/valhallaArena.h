@@ -3,47 +3,43 @@
 
 #include "Arena.h"
 #include <vector>
+#include <iostream>
+#include <thread>
+#include <chrono>
 
 class ValhallaArena : public Arena {
-
 protected:
+    static constexpr int resurrectionChance = 5;
+    static constexpr const char* arenaName = "Valhalla Arena";
 
-	const int resurrectionChance = 5;
-	const string arenaName = "Valhalla Arena";
+    void resurrectUnits(std::vector<std::unique_ptr<Unit>>& team) const {
+        for (auto& unit : team) {
+            if (!isAlive(unit)) {
+                int resurrectionHP = unit->getMaxHP() / 10;
+                unit->setHP(resurrectionHP);
+                std::cout << "\n" << arenaName << " resurrected " 
+                          << unit->getNickName() << " with " << resurrectionHP << " HP.\n";
+            }
+        }
+    }
 
 public:
+    void arenaEffect(std::vector<std::unique_ptr<Unit>>& team1, 
+                     std::vector<std::unique_ptr<Unit>>& team2) override 
+    {
+        if (!isTeamAlive(team1) || !isTeamAlive(team2)) return;
 
-	void arenaEffect(vector<unique_ptr<Unit>>& team1, vector<unique_ptr<Unit>>& team2) {
-		if (isTeamAlive(team1) && isTeamAlive(team2)) {
-			cout << "\n" << arenaName << " trying to perform resurrection spell" << endl;
-			this_thread::sleep_for(1s);
-			if (isLucky(resurrectionChance)) {
-				cout << "\n" << arenaName << " is succeed to perform resurrection spell" << endl;
-				for (unique_ptr<Unit>& unit : team1) {
-					if (!isAlive(unit)) {
-						int resurrectionHP = (unit->getMaxHP() / 10);
-						unit->setHP(resurrectionHP);
-						cout << "\n" << arenaName << " resurrect " << unit->getNickName() << " with " << resurrectionHP << " HP" << endl;
-					}
-					else {
-						cout << "\n" << unit->getNickName() << " is already alive" << endl;
-					}
-				}
-				for (unique_ptr<Unit>& unit : team2) {
-					if (!isAlive(unit)) {
-						int resurrectionHP = (unit->getMaxHP() / 10);
-						unit->setHP(resurrectionHP);
-						cout << "\n" << arenaName << " resurrect " << unit->getNickName() << " with " << resurrectionHP << " HP" << endl;
-					}
-					else {
-						cout << "\n" << unit->getNickName() << " is already alive" << endl;
-					}
-				}
-			}
-			else {
-				cout << "\n" << arenaName << " failed to perform resurrection spell" << endl;
-			}
-		}
-	}
+        std::cout << "\n" << arenaName << " attempts to cast Resurrection Spell...\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        if (isLucky(resurrectionChance)) {
+            std::cout << arenaName << " successfully casts the Resurrection Spell!\n";
+            resurrectUnits(team1);
+            resurrectUnits(team2);
+        } else {
+            std::cout << arenaName << " failed to cast the Resurrection Spell.\n";
+        }
+    }
 };
-#endif
+
+#endif // VALHALLAARENA_H
